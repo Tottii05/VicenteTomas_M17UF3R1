@@ -9,14 +9,14 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Character
   - Water
   - UI
   - Enemy
   - Floor
   - Camera
-  - 
-  - 
+  - PP
+  - Minimap
   - 
   - 
   - 
