@@ -1,8 +1,9 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ShootingBehaviour : MonoBehaviour, CharacterActions.IAttackActions
+public class ShootingBehaviour : MonoBehaviour, CharacterActions.IAttackActions, CharacterActions.IInventoryActions
 {
     private FirstPersonCamera firstPersonCamera;
     private ThirdPersonCamera thirdPersonCamera;
@@ -11,7 +12,8 @@ public class ShootingBehaviour : MonoBehaviour, CharacterActions.IAttackActions
     private CharacterActions inputActions;
     private Animator animator;
     public GameObject actualGun;
-    private AGun gunScript;
+    public GameObject[] weapons;
+    public AGun gunScript;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI maxAmmoText;
 
@@ -19,6 +21,7 @@ public class ShootingBehaviour : MonoBehaviour, CharacterActions.IAttackActions
     {
         inputActions = new CharacterActions();
         inputActions.Attack.SetCallbacks(this);
+        inputActions.Inventory.SetCallbacks(this);
     }
 
     private void OnEnable()
@@ -33,17 +36,35 @@ public class ShootingBehaviour : MonoBehaviour, CharacterActions.IAttackActions
 
     private void Start()
     {
-        gunScript = actualGun.GetComponent<AGun>();
         animator = GetComponentInChildren<Animator>();
-        firstPersonCamera = FindObjectOfType<FirstPersonCamera>();
-        thirdPersonCamera = FindObjectOfType<ThirdPersonCamera>();
-        if (thirdPersonCamera != null)
+        InitializeCameras();
+        InitializeGun();
+    }
+
+    private void InitializeCameras()
+    {
+        Transform camerasTransform = transform.parent.Find("Cameras");
+        if (camerasTransform != null)
         {
-            thirdPersonCamera.gameObject.SetActive(true);
+            firstPersonCamera = camerasTransform.GetComponentInChildren<FirstPersonCamera>();
+            thirdPersonCamera = camerasTransform.GetComponentInChildren<ThirdPersonCamera>();
+            if (thirdPersonCamera != null)
+            {
+                thirdPersonCamera.gameObject.SetActive(true);
+            }
+            if (firstPersonCamera != null)
+            {
+                firstPersonCamera.SetActive(false);
+            }
         }
-        if (firstPersonCamera != null)
+    }
+
+    private void InitializeGun()
+    {
+        if (actualGun != null)
         {
-            firstPersonCamera.SetActive(false);
+            gunScript = actualGun.GetComponent<AGun>();
+            UpdateGunScript();
         }
     }
 
@@ -102,6 +123,56 @@ public class ShootingBehaviour : MonoBehaviour, CharacterActions.IAttackActions
         {
             ammoText.text = gunScript.currentAmmo.ToString();
             maxAmmoText.text = gunScript.maxAmmo.ToString();
+        }
+    }
+
+    public void OnWeapon1(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            SwitchWeapon(0);
+        }
+    }
+
+    public void OnWeapon2(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            SwitchWeapon(1);
+        }
+    }
+
+    public void OnWeapon3(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            SwitchWeapon(2);
+        }
+    }
+
+    private void SwitchWeapon(int v)
+    {
+        if (weapons.Length > v)
+        {
+            actualGun.SetActive(false);
+            actualGun = weapons[v];
+            actualGun.SetActive(true);
+            gunScript = actualGun.GetComponent<AGun>();
+            ammoText.text = gunScript.currentAmmo.ToString();
+            maxAmmoText.text = gunScript.maxAmmo.ToString();
+        }
+    }
+
+    public void UpdateGunScript()
+    {
+        if (actualGun != null)
+        {
+            gunScript = actualGun.GetComponent<AGun>();
+            if (gunScript != null)
+            {
+                ammoText.text = gunScript.currentAmmo.ToString();
+                maxAmmoText.text = gunScript.maxAmmo.ToString();
+            }
         }
     }
 }

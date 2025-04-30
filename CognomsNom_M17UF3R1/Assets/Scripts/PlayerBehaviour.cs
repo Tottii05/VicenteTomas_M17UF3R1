@@ -131,4 +131,22 @@ public class PlayerBehaviour : MonoBehaviour, CharacterActions.IMovementActions,
         yield return new WaitForSeconds(15.2f);
         weapon?.SetActive(true);
     }
+
+    public void ResetPosition()
+    {
+        // Detener el movimiento del Rigidbody
+        rb.velocity = new Vector3(0, rb.velocity.y, 0); // Mantener la velocidad en Y para no afectar la gravedad
+        movementInput = Vector2.zero; // Reiniciar la entrada de movimiento
+        isRunning = false; // Asegurar que no esté corriendo
+        isJumping = false; // Asegurar que no esté saltando
+
+        // Reiniciar los parámetros del Animator
+        animator.SetBool("walking", false);
+        animator.SetBool("run", false);
+        animator.SetFloat("x", 0f);
+        animator.SetFloat("y", 0f);
+        animator.ResetTrigger("jump");
+
+        Debug.Log("PlayerBehaviour: ResetPosition - Movement and animations reset");
+    }
 }
