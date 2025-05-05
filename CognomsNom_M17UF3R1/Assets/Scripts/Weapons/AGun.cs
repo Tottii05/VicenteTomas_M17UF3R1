@@ -9,4 +9,5 @@ public abstract class AGun : MonoBehaviour
     public abstract float magazineSize { get; set; }
     public abstract void Shoot();
     public abstract void Reload();
+    public abstract void ReturnBulletToPool(GameObject bullet);
 }

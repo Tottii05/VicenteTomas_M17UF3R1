@@ -91,9 +91,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: ec6553ef10df46b4eb219295d62a8984, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 4ff4f03bfa3ceb7468c9e7b40414b393, type: 2}
     - target: {fileID: 919132149155446097, guid: ec6553ef10df46b4eb219295d62a8984, type: 3}
       propertyPath: m_Name
-      value: SingleShot
+      value: BurstShot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -104,7 +108,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec6553ef10df46b4eb219295d62a8984, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8843634481158716128}
+      addedObject: {fileID: 6413617456687533390}
   m_SourcePrefab: {fileID: 100100000, guid: ec6553ef10df46b4eb219295d62a8984, type: 3}
 --- !u!4 &8307775851358834051 stripped
 Transform:
@@ -116,7 +120,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ec6553ef10df46b4eb219295d62a8984, type: 3}
   m_PrefabInstance: {fileID: 8413180829466012264}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8843634481158716128
+--- !u!114 &6413617456687533390
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -125,8 +129,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 8647182530383943481}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e18ef915524dd249919200ecf3c9489, type: 3}
+  m_Script: {fileID: 11500000, guid: eebbee9105d43c64ea91b84a3c0ea21b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   firePoint: {fileID: 2416921120709984076}
-  bulletPrefab: {fileID: 245248445929597092, guid: c3bf7dade125b1342926b81425374487, type: 3}
+  bulletPrefab: {fileID: 5654938905363880368, guid: fc42a15ba636f084f832a3ae1fa9b45b, type: 3}
