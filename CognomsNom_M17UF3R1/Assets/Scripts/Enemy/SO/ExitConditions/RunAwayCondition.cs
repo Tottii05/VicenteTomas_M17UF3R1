@@ -10,7 +10,7 @@ public class RunAwayCondition : ConditionSO
     {
         if (ec.HP <= 25)
         {
-            return ec.runAway == true;
+            //return ec.runAway == true;
         }
         return false;
     }

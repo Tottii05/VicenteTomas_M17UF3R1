@@ -17,13 +17,10 @@ public class SingleShotGun : AGun
     {
         if (bulletPrefab == null)
         {
-            Debug.LogError("bulletPrefab no está asignado en el Inspector. No se puede inicializar la pool de balas.");
             return;
         }
 
         InitializeBulletPool();
-        Debug.Log($"Bullet pool inicializada para {gameObject.name} con {bulletPool.Count} balas");
-        Debug.Log($"Munición inicial: {currentAmmo}/{magazineSize}, Max ammo: {maxAmmo}");
     }
 
     private void InitializeBulletPool()
@@ -35,10 +32,6 @@ public class SingleShotGun : AGun
             {
                 bullet.SetActive(false);
                 bulletPool.Push(bullet);
-            }
-            else
-            {
-                Debug.LogError($"Fallo al instanciar la bala {i + 1} para {gameObject.name}. Asegúrate de que bulletPrefab sea válido.");
             }
         }
     }
@@ -54,16 +47,8 @@ public class SingleShotGun : AGun
             {
                 bulletScript.Initialize(this, firePoint);
             }
-            else
-            {
-                Debug.LogError("No se pudo inicializar la bala. Verifica Bullet script o firePoint.");
-            }
             currentAmmo--;
             StartCoroutine(ReturnToPool(bullet));
-        }
-        else
-        {
-            Debug.Log("No ammo or bullet pool is empty");
         }
     }
 

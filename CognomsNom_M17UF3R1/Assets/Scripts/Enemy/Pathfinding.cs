@@ -28,11 +28,6 @@ public class Pathfinding : MonoBehaviour
         StopAllCoroutines();
     }
 
-    public void StopRunAway()
-    {
-        StopAllCoroutines();
-    }
-
     public void Patrol()
     {
         StopAllCoroutines();
@@ -51,13 +46,5 @@ public class Pathfinding : MonoBehaviour
             currentDestination = currentDestination == pointA ? pointB : pointA;
             yield return new WaitForSeconds(1f);
         }
-    }
-    public void RunAway()
-    {
-        StopAllCoroutines();
-        Vector3 directionAway = (transform.position - target.transform.position).normalized;
-        float fleeDistance = 10f;
-        Vector3 newTargetPosition = transform.position + (directionAway * fleeDistance);
-        agent.SetDestination(newTargetPosition);
     }
 }

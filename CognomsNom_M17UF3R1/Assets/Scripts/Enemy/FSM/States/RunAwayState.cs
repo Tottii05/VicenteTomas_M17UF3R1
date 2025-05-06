@@ -11,11 +11,11 @@ public class RunAwayState : StateSO
 
     public override void OnStateExit(EnemyController ec)
     {
-        ec.gameObject.GetComponent<Pathfinding>().StopRunAway();
+        //ec.gameObject.GetComponent<Pathfinding>().StopRunAway();
     }
 
     public override void OnStateUpdate(EnemyController ec)
     {
-        ec.gameObject.GetComponent<Pathfinding>().RunAway();
+        //ec.gameObject.GetComponent<Pathfinding>().RunAway();
     }
 }

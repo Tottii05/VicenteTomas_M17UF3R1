@@ -17,13 +17,10 @@ public class BurstShotGun : AGun
     {
         if (bulletPrefab == null)
         {
-            Debug.LogError("bulletPrefab no está asignado en el Inspector. No se puede inicializar la pool de balas.");
             return;
         }
 
         InitializeBulletPool();
-        Debug.Log($"Bullet pool inicializada para {gameObject.name} con {bulletPool.Count} balas");
-        Debug.Log($"Munición inicial: {currentAmmo}/{magazineSize}, Max ammo: {maxAmmo}");
     }
 
     private void InitializeBulletPool()
@@ -36,10 +33,6 @@ public class BurstShotGun : AGun
                 bullet.SetActive(false);
                 bulletPool.Push(bullet);
             }
-            else
-            {
-                Debug.LogError($"Fallo al instanciar la bala {i + 1} para {gameObject.name}. Asegúrate de que bulletPrefab sea válido.");
-            }
         }
     }
 
@@ -49,22 +42,9 @@ public class BurstShotGun : AGun
 
     public override void Shoot()
     {
-        Debug.Log($"Intentando disparar con {gameObject.name}. Munición actual: {currentAmmo}, Balas en pool: {bulletPool.Count}");
         if (currentAmmo >= 3 && bulletPool.Count >= 3)
         {
             StartCoroutine(BurstFire());
-        }
-        else
-        {
-            Debug.Log($"No hay suficiente munición o balas en la pool para disparar en ráfaga con {gameObject.name}");
-            if (currentAmmo < 3)
-            {
-                Debug.Log($"No hay suficiente munición: {currentAmmo}/3 requeridas");
-            }
-            if (bulletPool.Count < 3)
-            {
-                Debug.Log($"No hay suficientes balas en la pool: {bulletPool.Count}/3 requeridas");
-            }
         }
     }
 
@@ -81,10 +61,6 @@ public class BurstShotGun : AGun
                 {
                     bulletScript.Initialize(this, firePoint);
                 }
-                else
-                {
-                    Debug.LogError("No se pudo inicializar la bala. Verifica Bullet script o firePoint.");
-                }
                 currentAmmo--;
                 StartCoroutine(ReturnToPool(bullet));
                 yield return new WaitForSeconds(0.1f);
@@ -99,7 +75,6 @@ public class BurstShotGun : AGun
         {
             bullet.SetActive(false);
             bulletPool.Push(bullet);
-            Debug.Log($"Bala devuelta a la pool de {gameObject.name}. Balas en pool: {bulletPool.Count}");
         }
     }
 
@@ -109,7 +84,6 @@ public class BurstShotGun : AGun
         {
             bullet.SetActive(false);
             bulletPool.Push(bullet);
-            Debug.Log($"Bala devuelta manualmente a la pool de {gameObject.name}. Balas en pool: {bulletPool.Count}");
         }
     }
 
@@ -137,12 +111,6 @@ public class BurstShotGun : AGun
                     bulletPool.Push(bullet);
                 }
             }
-
-            Debug.Log($"Recargado. Munición actual: {currentAmmo}/{magazineSize}, Max ammo: {maxAmmo}, Balas en pool: {bulletPool.Count}");
-        }
-        else
-        {
-            Debug.Log("No hay suficiente maxAmmo para recargar");
         }
     }
 }

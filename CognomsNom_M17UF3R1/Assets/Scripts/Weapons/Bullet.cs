@@ -5,7 +5,7 @@ public class Bullet : MonoBehaviour
     public float speed = 20f;
     public float lifetime = 5f;
     public float damage = 10f;
-    private AGun gun; // Usamos AGun como base para soportar tanto SingleShotGun como BurstShotGun
+    private AGun gun;
     private float timer;
 
     public void Initialize(AGun shootingGun, GameObject firePoint)
@@ -16,10 +16,6 @@ public class Bullet : MonoBehaviour
             transform.position = firePoint.transform.position;
             transform.rotation = firePoint.transform.rotation;
         }
-        else
-        {
-            Debug.LogWarning("firePoint es null en Initialize. Usando posición actual.");
-        }
         timer = 0f;
     }
 
@@ -27,7 +23,6 @@ public class Bullet : MonoBehaviour
     {
         if (gun == null)
         {
-            Debug.LogWarning("gun es null en Update. La bala será destruida.");
             Destroy(gameObject);
             return;
         }
@@ -44,18 +39,21 @@ public class Bullet : MonoBehaviour
     {
         if (gun != null)
         {
-            Debug.Log("Bullet hit: " + other.name);
+            IDamageable damageable = other.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.TakeDamage(damage);
+            }
             gun.ReturnBulletToPool(gameObject);
         }
         else
         {
-            Debug.LogError("gun es null en OnTriggerEnter. No se puede devolver la bala a la pool.");
-            Destroy(gameObject); // Destruir la bala como fallback
+            Destroy(gameObject);
         }
     }
 
     private void OnDisable()
     {
-        timer = 0f; // Resetear el temporizador al desactivar
+        timer = 0f;
     }
 } 

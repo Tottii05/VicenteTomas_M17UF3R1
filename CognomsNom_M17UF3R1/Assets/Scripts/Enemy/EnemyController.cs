@@ -8,16 +8,33 @@ public class EnemyController : MonoBehaviour, IDamageable
 {
     public int HP;
     public GameObject target;
-    public bool OnVisionRange = false, OnAttackRange = false, runAway = false;
+    public bool OnVisionRange = false, OnAttackRange = false;
     public Pathfinding _chaseB;
     public StateSO currentNode;
     public List<StateSO> Nodes;
-    public float AttackRange = 2f;
+    public float AttackRange = 0.5f;
     public EnemyFOV EnemyFOV;
     public Pathfinding Pathfinding;
     public Animator animator;
-
+    public BoxCollider enemyDmgSource;
+    public SphereCollider attackRangeCollider;
     private Vector3 previousPosition;
+
+    public void OnEnable()
+    {
+        PlayerBehaviour.PlayerDead += OnPlayerDead;
+    }
+
+    private void OnPlayerDead()
+    {
+        OnAttackRange = false;
+        OnVisionRange = false;
+    }
+
+    public void OnDisable()
+    {
+        PlayerBehaviour.PlayerDead -= OnPlayerDead;
+    }
 
     void Start()
     {
@@ -26,6 +43,10 @@ public class EnemyController : MonoBehaviour, IDamageable
         Pathfinding = GetComponent<Pathfinding>();
         _chaseB = GetComponent<Pathfinding>();
         previousPosition = transform.position;
+
+        attackRangeCollider = gameObject.AddComponent<SphereCollider>();
+        attackRangeCollider.isTrigger = true;
+        attackRangeCollider.radius = AttackRange;
     }
 
     private void OnTriggerEnter(Collider collision)
@@ -39,13 +60,29 @@ public class EnemyController : MonoBehaviour, IDamageable
         }
     }
 
-    public void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
             if (EnemyFOV.CheckPlayerInVision(other.gameObject))
             {
-                OnAttackRange = Vector3.Distance(transform.position, other.transform.position) < AttackRange;
+                Vector3 directionToPlayer = (other.transform.position - transform.position).normalized;
+                float dotProduct = Vector3.Dot(transform.forward, directionToPlayer);
+                bool isPlayerInFront = dotProduct > 0;
+
+                if (isPlayerInFront)
+                {
+                    OnAttackRange = attackRangeCollider.bounds.Contains(other.transform.position);
+                }
+                else
+                {
+                    OnAttackRange = false;
+                }
+                CheckEndingConditions();
+            }
+            else
+            {
+                OnAttackRange = false;
                 CheckEndingConditions();
             }
         }
@@ -56,12 +93,24 @@ public class EnemyController : MonoBehaviour, IDamageable
         if (collision.gameObject.CompareTag("Player"))
         {
             OnVisionRange = false;
+            OnAttackRange = false;
+            target = null;
+            _chaseB.target = null;
             CheckEndingConditions();
         }
     }
 
     private void Update()
     {
+        if (target != null && (!target.activeInHierarchy || target == null))
+        {
+            OnVisionRange = false;
+            OnAttackRange = false;
+            target = null;
+            _chaseB.target = null;
+            CheckEndingConditions();
+        }
+
         currentNode.OnStateUpdate(this);
 
         Vector3 currentPosition = transform.position;
@@ -103,5 +152,15 @@ public class EnemyController : MonoBehaviour, IDamageable
         HP -= (int)damage;
         animator.SetTrigger("hit");
         CheckEndingConditions();
+    }
+
+    public void EnableDamageSource()
+    {
+        enemyDmgSource.enabled = true;
+    }
+
+    public void DisableDamageSource()
+    {
+        enemyDmgSource.enabled = false;
     }
 }
