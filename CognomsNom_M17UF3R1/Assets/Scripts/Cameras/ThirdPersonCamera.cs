@@ -39,14 +39,10 @@ public class ThirdPersonCamera : MonoBehaviour, CharacterActions.ICameraActions
     {
         float mouseX = lookInput.x * lookSensitivity;
         float mouseY = lookInput.y * lookSensitivity;
-
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, minVerticalAngle, maxVerticalAngle);
-
         yRotation += mouseX;
-
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
-
         if (playerTransform != null)
         {
             transform.position = playerTransform.position + transform.rotation * offset;
@@ -67,5 +63,18 @@ public class ThirdPersonCamera : MonoBehaviour, CharacterActions.ICameraActions
     public float GetCameraPitch()
     {
         return xRotation;
+    }
+
+    public void SetCameraControlsEnabled(bool enabled)
+    {
+        if (enabled)
+        {
+            inputActions.Camera.Enable();
+        }
+        else
+        {
+            inputActions.Camera.Disable();
+            lookInput = Vector2.zero;
+        }
     }
 }

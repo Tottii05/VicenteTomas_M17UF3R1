@@ -35,7 +35,6 @@ public class PlayerBehaviour : MonoBehaviour, CharacterActions.IMovementActions,
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-
         animator = GetComponentInChildren<Animator>();
         thirdPersonCamera = FindObjectOfType<ThirdPersonCamera>();
         firstPersonCamera = FindObjectOfType<FirstPersonCamera>();
@@ -60,24 +59,17 @@ public class PlayerBehaviour : MonoBehaviour, CharacterActions.IMovementActions,
 
     private void FixedUpdate()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        // Activar isJumping cuando el jugador salta o cae (velocidad vertical negativa y no en el suelo)
-        if (!isGrounded && rb.velocity.y < 0 && !isJumping)
+        Collider[] hits = Physics.OverlapSphere(groundCheck.position, groundDistance, groundMask);
+        isGrounded = false;
+        foreach (var hit in hits)
         {
-            isJumping = true;
-            animator.SetBool("isJumping", true);
-        }
-        // Desactivar isJumping y disparar land solo cuando toca el suelo después de saltar o caer
-        else if (isGrounded && isJumping)
-        {
-            isJumping = false;
-            animator.SetBool("isJumping", false);
-            animator.SetTrigger("land");
+            if (hit.gameObject != gameObject && hit.gameObject.layer == LayerMask.NameToLayer("Floor"))
+            {
+                isGrounded = true;
+            }
         }
 
         float currentSpeed = isRunning ? moveSpeed * runSpeedMultiplier : moveSpeed;
-
         Vector3 move = new Vector3(movementInput.x, 0, movementInput.y).normalized;
         if (move.magnitude >= 0.1f)
         {
@@ -127,8 +119,6 @@ public class PlayerBehaviour : MonoBehaviour, CharacterActions.IMovementActions,
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             animator.SetTrigger("jump");
-            isJumping = true;
-            animator.SetBool("isJumping", true);
         }
     }
 
@@ -153,15 +143,20 @@ public class PlayerBehaviour : MonoBehaviour, CharacterActions.IMovementActions,
 
     public void OnEmote(InputAction.CallbackContext context)
     {
-        GetComponentInChildren<ShootingBehaviour>().actualGun.SetActive(false);
-        animator.SetTrigger("dance");
-        StartCoroutine(WaitForDance());
+        if (context.performed)
+        {
+            GetComponentInChildren<ShootingBehaviour>().actualGun.SetActive(false);
+            animator.SetTrigger("dance");
+            thirdPersonCamera.SetCameraControlsEnabled(false);
+            StartCoroutine(WaitForDance());
+        }
     }
 
     public IEnumerator WaitForDance()
     {
         yield return new WaitForSeconds(15.2f);
-        weapon?.SetActive(true);
+        shootingBehaviour.actualGun.SetActive(true);
+        thirdPersonCamera.SetCameraControlsEnabled(true);
     }
 
     public void ResetPosition()
@@ -177,8 +172,6 @@ public class PlayerBehaviour : MonoBehaviour, CharacterActions.IMovementActions,
         animator.ResetTrigger("jump");
         animator.SetBool("isJumping", false);
         animator.ResetTrigger("land");
-
-        Debug.Log("PlayerBehaviour: ResetPosition - Movement and animations reset");
     }
 
     public void TakeDamage(float damage)
@@ -213,14 +206,12 @@ public class PlayerBehaviour : MonoBehaviour, CharacterActions.IMovementActions,
     {
         float targetWeight = isCrouching ? 1f : 0f;
         float currentWeight = animator.GetLayerWeight(1);
-
         while (Mathf.Abs(currentWeight - targetWeight) > 0.01f)
         {
             currentWeight = Mathf.MoveTowards(currentWeight, targetWeight, crouchTransitionSpeed * Time.deltaTime);
             animator.SetLayerWeight(1, currentWeight);
             yield return null;
         }
-
         animator.SetLayerWeight(1, targetWeight);
     }
 }
